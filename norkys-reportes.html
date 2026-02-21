@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portal de Reportes</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e1a;
+    --surface: #111827;
+    --surface2: #1a2235;
+    --border: #1f2d45;
+    --accent: #0ea5e9;
+    --accent2: #38bdf8;
+    --accent-glow: rgba(14,165,233,0.18);
+    --text: #e2e8f0;
+    --text-muted: #64748b;
+    --danger: #ef4444;
+    --success: #10b981;
+    --sidebar-w: 300px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Sora', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ─── BACKGROUND GRID ─── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(14,165,233,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(14,165,233,0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ════════════════════════════════════════
+     LOGIN SCREEN
+  ════════════════════════════════════════ */
+  #login-screen {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    background: var(--bg);
+  }
+
+  .login-blob {
+    position: absolute;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(14,165,233,0.12) 0%, transparent 70%);
+    border-radius: 50%;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    animation: pulse 4s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: translate(-50%,-50%) scale(1); opacity: 0.6; }
+    50%       { transform: translate(-50%,-50%) scale(1.15); opacity: 1; }
+  }
+
+  .login-card {
+    position: relative;
+    width: 420px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 48px 40px;
+    box-shadow: 0 0 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(14,165,233,0.08);
+    animation: slideUp 0.6s cubic-bezier(0.22,1,0.36,1);
+  }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .login-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 36px;
+  }
+
+  .logo-icon {
+    width: 42px; height: 42px;
+    background: linear-gradient(135deg, var(--accent), #0284c7);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    box-shadow: 0 0 20px rgba(14,165,233,0.4);
+  }
+
+  .logo-text {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: var(--text);
+  }
+
+  .logo-text span { color: var(--accent); }
+
+  .login-title {
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.8px;
+    margin-bottom: 6px;
+    line-height: 1.2;
+  }
+
+  .login-sub {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 36px;
+    font-weight: 300;
+  }
+
+  .field-group {
+    margin-bottom: 20px;
+  }
+
+  .field-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    display: block;
+    font-family: 'Space Mono', monospace;
+  }
+
+  .field-wrap {
+    position: relative;
+  }
+
+  .field-icon {
+    position: absolute;
+    left: 14px; top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    font-size: 15px;
+    pointer-events: none;
+  }
+
+  input[type="text"], input[type="password"] {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 13px 14px 13px 40px;
+    color: var(--text);
+    font-family: 'Sora', sans-serif;
+    font-size: 14px;
+    outline: none;
+    transition: border 0.2s, box-shadow 0.2s;
+  }
+
+  input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+  }
+
+  input::placeholder { color: var(--text-muted); opacity: 0.6; }
+
+  .login-btn {
+    width: 100%;
+    margin-top: 8px;
+    padding: 14px;
+    background: linear-gradient(135deg, var(--accent), #0284c7);
+    border: none;
+    border-radius: 10px;
+    color: #fff;
+    font-family: 'Sora', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: 0.3px;
+    position: relative;
+    overflow: hidden;
+    transition: opacity 0.2s, transform 0.15s;
+    box-shadow: 0 4px 20px rgba(14,165,233,0.35);
+  }
+
+  .login-btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent);
+  }
+
+  .login-btn:hover { opacity: 0.92; transform: translateY(-1px); }
+  .login-btn:active { transform: translateY(0); }
+
+  .login-error {
+    background: rgba(239,68,68,0.1);
+    border: 1px solid rgba(239,68,68,0.3);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 13px;
+    color: #fca5a5;
+    margin-top: 16px;
+    display: none;
+  }
+
+  .login-footer {
+    text-align: center;
+    margin-top: 28px;
+    font-size: 11px;
+    color: var(--text-muted);
+    font-family: 'Space Mono', monospace;
+  }
+
+  /* ════════════════════════════════════════
+     APP (post-login)
+  ════════════════════════════════════════ */
+  #app {
+    display: none;
+    height: 100vh;
+    flex-direction: row;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* SIDEBAR */
+  #sidebar {
+    width: var(--sidebar-w);
+    min-width: var(--sidebar-w);
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    position: relative;
+    z-index: 10;
+  }
+
+  .sidebar-header {
+    padding: 24px 22px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .sidebar-logo {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .sidebar-logo-icon {
+    width: 34px; height: 34px;
+    background: linear-gradient(135deg, var(--accent), #0284c7);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    box-shadow: 0 0 14px rgba(14,165,233,0.35);
+  }
+
+  .sidebar-logo-text {
+    font-size: 15px; font-weight: 700;
+    letter-spacing: -0.4px;
+  }
+
+  .sidebar-logo-text span { color: var(--accent); }
+
+  .user-badge {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 12px;
+  }
+
+  .user-avatar {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), #7c3aed);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700;
+    color: #fff;
+    flex-shrink: 0;
+  }
+
+  .user-info { flex: 1; min-width: 0; }
+  .user-name { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .user-role { font-size: 11px; color: var(--text-muted); font-family: 'Space Mono', monospace; }
+
+  .sidebar-section-title {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    padding: 20px 22px 10px;
+    font-family: 'Space Mono', monospace;
+  }
+
+  .reports-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 12px;
+  }
+
+  .reports-list::-webkit-scrollbar { width: 4px; }
+  .reports-list::-webkit-scrollbar-track { background: transparent; }
+  .reports-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  .report-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 10px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+    border: 1px solid transparent;
+    margin-bottom: 4px;
+    position: relative;
+  }
+
+  .report-item:hover {
+    background: var(--surface2);
+    border-color: var(--border);
+  }
+
+  .report-item.active {
+    background: rgba(14,165,233,0.1);
+    border-color: rgba(14,165,233,0.3);
+  }
+
+  .report-item.active::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 20%; bottom: 20%;
+    width: 3px;
+    background: var(--accent);
+    border-radius: 0 2px 2px 0;
+    left: -1px;
+  }
+
+  .report-icon {
+    width: 34px; height: 34px;
+    border-radius: 8px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px;
+    flex-shrink: 0;
+    transition: background 0.15s;
+  }
+
+  .report-item.active .report-icon {
+    background: rgba(14,165,233,0.15);
+    border-color: rgba(14,165,233,0.4);
+  }
+
+  .report-name {
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.3;
+    color: var(--text);
+  }
+
+  .report-category {
+    font-size: 10px;
+    color: var(--text-muted);
+    font-family: 'Space Mono', monospace;
+    margin-top: 1px;
+  }
+
+  .sidebar-footer {
+    padding: 16px 12px;
+    border-top: 1px solid var(--border);
+  }
+
+  .logout-btn {
+    width: 100%;
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    cursor: pointer;
+    font-family: 'Sora', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.15s;
+  }
+
+  .logout-btn:hover {
+    background: rgba(239,68,68,0.08);
+    border-color: rgba(239,68,68,0.3);
+    color: #fca5a5;
+  }
+
+  /* MAIN CONTENT */
+  #main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .main-topbar {
+    padding: 18px 28px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: var(--surface);
+    flex-shrink: 0;
+  }
+
+  .topbar-title {
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: -0.4px;
+    flex: 1;
+  }
+
+  .topbar-badge {
+    font-size: 11px;
+    font-family: 'Space Mono', monospace;
+    color: var(--accent);
+    background: rgba(14,165,233,0.1);
+    border: 1px solid rgba(14,165,233,0.25);
+    border-radius: 6px;
+    padding: 3px 10px;
+  }
+
+  .main-content {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* WELCOME STATE */
+  #welcome-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    text-align: center;
+    padding: 40px;
+  }
+
+  .welcome-icon {
+    font-size: 56px;
+    margin-bottom: 20px;
+    opacity: 0.3;
+  }
+
+  .welcome-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    letter-spacing: -0.5px;
+  }
+
+  .welcome-sub {
+    font-size: 13px;
+    color: var(--text-muted);
+    opacity: 0.6;
+  }
+
+  /* REPORT VIEWER */
+  #report-viewer {
+    display: none;
+    height: 100%;
+    width: 100%;
+    position: relative;
+    background: #0a0e1a;
+  }
+
+  #report-iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: block;
+  }
+
+  /* Franjas que cubren bordes blancos de Power BI */
+  .pbi-strip {
+    position: absolute;
+    background: #0a0e1a;
+    z-index: 10;
+    pointer-events: all; /* captura clicks para bloquearlos */
+    cursor: default;
+  }
+  #pbi-strip-left   { top:0; left:0;   width:75px;  height:100%; }
+  #pbi-strip-right  { top:0; right:0;  width:75px;  height:100%; }
+  #pbi-strip-bottom { bottom:0; left:0; width:100%; height:60px; }
+
+  .iframe-loading {
+    position: absolute;
+    inset: 0;
+    background: var(--bg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    z-index: 5;
+  }
+
+  .spinner {
+    width: 40px; height: 40px;
+    border: 3px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .loading-text {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-family: 'Space Mono', monospace;
+  }
+
+  /* MOBILE TOGGLE */
+  .menu-toggle {
+    display: none;
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    cursor: pointer;
+    padding: 7px 10px;
+    font-size: 16px;
+  }
+
+  @media (max-width: 768px) {
+    .menu-toggle { display: block; }
+    #sidebar {
+      position: fixed;
+      left: -100%;
+      top: 0; bottom: 0;
+      z-index: 200;
+      transition: left 0.3s;
+      width: 280px;
+      min-width: 280px;
+    }
+    #sidebar.open { left: 0; }
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 199;
+    }
+    .sidebar-overlay.show { display: block; }
+  }
+</style>
+
+<script>
+// ══════════════════════════════════════════════════
+//  BLOQUEAR ZOOM Y SCROLL DEL MOUSE EN EL REPORTE
+// ══════════════════════════════════════════════════
+
+// Bloquear Ctrl+Scroll (zoom con rueda del mouse)
+document.addEventListener('wheel', function(e) {
+  if (e.ctrlKey) {
+    e.preventDefault();
+    e.stopPropagation();
+    return false;
+  }
+  // También bloquear scroll normal cuando el reporte está visible
+  var viewer = document.getElementById('report-viewer');
+  if (viewer && viewer.style.display !== 'none') {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+}, { passive: false });
+
+// Bloquear Ctrl+= y Ctrl+- (zoom por teclado)
+document.addEventListener('keydown', function(e) {
+  if (e.ctrlKey && (e.key === '+' || e.key === '-' || e.key === '=' || e.key === '0')) {
+    var viewer = document.getElementById('report-viewer');
+    if (viewer && viewer.style.display !== 'none') {
+      e.preventDefault();
+      return false;
+    }
+  }
+});
+
+// Bloquear zoom táctil en móviles (pinch zoom)
+document.addEventListener('touchmove', function(e) {
+  var viewer = document.getElementById('report-viewer');
+  if (viewer && viewer.style.display !== 'none') {
+    if (e.touches.length > 1) {
+      e.preventDefault();
+    }
+  }
+}, { passive: false });
+
+// ══════════════════════════════════════════════════
+//  PROTECCIÓN: Bloquea click derecho, F12 y atajos
+// ══════════════════════════════════════════════════
+
+// 1. Bloquear click derecho
+document.addEventListener('contextmenu', function(e) {
+  e.preventDefault();
+  return false;
+});
+
+// 2. Bloquear teclas: F12, Ctrl+U, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+Shift+C
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'F12' || e.keyCode === 123) {
+    e.preventDefault(); return false;
+  }
+  if (e.ctrlKey && (e.key === 'u' || e.key === 'U')) {
+    e.preventDefault(); return false;
+  }
+  if (e.ctrlKey && e.shiftKey && ['I','i','J','j','C','c'].includes(e.key)) {
+    e.preventDefault(); return false;
+  }
+  if (e.ctrlKey && (e.key === 's' || e.key === 'S')) {
+    e.preventDefault(); return false;
+  }
+});
+
+// 3. Detectar DevTools SOLO comparando tiempo de ejecución (más confiable)
+(function detectDevTools() {
+  var open = false;
+
+  function check() {
+    var start = performance.now();
+    // debugger activa pausa cuando DevTools está abierto
+    (function(){ /* loop */ })();
+    var elapsed = performance.now() - start;
+
+    // Método alternativo: tamaño de ventana con margen generoso
+    var w = window.outerWidth  - window.innerWidth;
+    var h = window.outerHeight - window.innerHeight;
+    // Usamos margen de 300px para evitar falsos positivos por barras del OS
+    var bySize = (w > 300 || h > 300);
+
+    if (bySize) {
+      if (!open) { open = true; showBlockScreen(); }
+    } else {
+      if (open)  { open = false; hideBlockScreen(); }
+    }
+  }
+
+  setInterval(check, 800);
+})();
+
+function showBlockScreen() {
+  var overlay = document.getElementById('devtools-block');
+  if (!overlay) {
+    overlay = document.createElement('div');
+    overlay.id = 'devtools-block';
+    overlay.style.cssText = [
+      'position:fixed','inset:0','z-index:999999',
+      'background:#0a0e1a','display:flex','flex-direction:column',
+      'align-items:center','justify-content:center','text-align:center',
+      'font-family:Sora,sans-serif','color:#e2e8f0'
+    ].join(';');
+    overlay.innerHTML = [
+      '<div style="font-size:56px;margin-bottom:20px">🔒</div>',
+      '<div style="font-size:22px;font-weight:700;margin-bottom:10px;color:#0ea5e9">Acceso Restringido</div>',
+      '<div style="font-size:14px;color:#64748b;max-width:300px;line-height:1.6">',
+      'Las herramientas de desarrollo están deshabilitadas en esta plataforma.',
+      '</div>'
+    ].join('');
+    document.body.appendChild(overlay);
+  }
+  overlay.style.display = 'flex';
+}
+
+function hideBlockScreen() {
+  var overlay = document.getElementById('devtools-block');
+  if (overlay) overlay.style.display = 'none';
+}
+</script>
+</head>
+<body>
+
+<!-- ═══════════ LOGIN ═══════════ -->
+<div id="login-screen">
+  <div class="login-blob"></div>
+  <div class="login-card">
+
+    <div class="login-logo">
+      <div class="logo-icon">📊</div>
+      <div class="logo-text">Analytics<span>Norkys</span></div>
+    </div>
+
+    <h1 class="login-title">Bienvenido</h1>
+    <p class="login-sub">Acceso exclusivo para usuarios autorizados</p>
+
+    <div class="field-group">
+      <label class="field-label">Usuario</label>
+      <div class="field-wrap">
+        <span class="field-icon">👤</span>
+        <input type="text" id="inp-user" placeholder="Ingresa tu usuario" autocomplete="off">
+      </div>
+    </div>
+
+    <div class="field-group">
+      <label class="field-label">Contraseña</label>
+      <div class="field-wrap">
+        <span class="field-icon">🔒</span>
+        <input type="password" id="inp-pass" placeholder="••••••••••" autocomplete="off">
+      </div>
+    </div>
+
+    <button class="login-btn" onclick="doLogin()">Iniciar sesión →</button>
+    <div id="login-error" class="login-error" style="display:none;">⚠️ Usuario o contraseña incorrectos.</div>
+
+    <div class="login-footer">ACCESO RESTRINGIDO · SOLO USUARIOS AUTORIZADOS</div>
+  </div>
+</div>
+
+<!-- ═══════════ APP ═══════════ -->
+<div id="app">
+
+  <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+  <!-- SIDEBAR -->
+  <nav id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-logo">
+        <div class="sidebar-logo-icon">📊</div>
+        <div class="sidebar-logo-text">Analytics<span>Norkys</span></div>
+      </div>
+      <div class="user-badge">
+        <div class="user-avatar" id="user-avatar">U</div>
+        <div class="user-info">
+          <div class="user-name" id="user-display">Usuario</div>
+          <div class="user-role">ANALISTA</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar-section-title">📋 Mis Reportes</div>
+
+    <div class="reports-list" id="reports-list">
+      <!-- Populated by JS -->
+    </div>
+
+    <div class="sidebar-footer">
+      <button class="logout-btn" onclick="doLogout()">
+        🚪 <span>Cerrar sesión</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <div id="main">
+    <div class="main-topbar">
+      <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+      <div class="topbar-title" id="topbar-title">Portal de Reportes</div>
+      <div class="topbar-badge" id="topbar-badge">Power BI</div>
+    </div>
+
+    <div class="main-content">
+      <!-- Welcome -->
+      <div id="welcome-state">
+        <div class="welcome-icon">📊</div>
+        <div class="welcome-title">Selecciona un reporte</div>
+        <div class="welcome-sub">Elige un reporte del panel lateral para visualizarlo</div>
+      </div>
+
+      <!-- Report Viewer -->
+      <div id="report-viewer">
+        <div class="iframe-loading" id="iframe-loading">
+          <div class="spinner"></div>
+          <div class="loading-text">Cargando reporte...</div>
+        </div>
+        <iframe id="report-iframe" title="Reporte Power BI"
+          allowfullscreen
+          onload="iframeLoaded()">
+        </iframe>
+        <!-- Franjas que camuflan bordes blancos de Power BI -->
+        <div class="pbi-strip" id="pbi-strip-left" oncontextmenu="return false;"></div>
+        <div class="pbi-strip" id="pbi-strip-right" oncontextmenu="return false;"></div>
+        <div class="pbi-strip" id="pbi-strip-bottom" oncontextmenu="return false;"></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════
+//  CONFIGURACIÓN — EDITA AQUÍ
+// ══════════════════════════════════════════════════════════
+
+// USUARIOS: { usuario: { pass, nombre, reportes: [keys] } }
+const USUARIOS = {
+  "analista": {
+    pass: "analista123",
+    nombre: "Analista",
+    reportes: ["Consumo", "inventario", "rrhh", "financiero"]
+  },
+  "admin": {
+    pass: "admin123",
+    nombre: "Administrador",
+    reportes: ["Consumo",]
+  },
+  "gerente": {
+    pass: "gerente123",
+    nombre: "Gerencia",
+    reportes: ["Consumo", "financiero", "rrhh"]
+  }
+};
+
+// ══════════════════════════════════════════════════════════
+//  ENCRIPTACIÓN SIMPLE (ofuscación + XOR)
+//  IMPORTANTE: Esta sección debe estar ANTES que REPORTES
+// ══════════════════════════════════════════════════════════
+const SECRET = "AH_2024_PBI_K3Y"; // Cambia esta clave secreta
+
+function encodeReport(url) {
+  let encoded = "";
+  for (let i = 0; i < url.length; i++) {
+    encoded += String.fromCharCode(url.charCodeAt(i) ^ SECRET.charCodeAt(i % SECRET.length));
+  }
+  return btoa(encoded);
+}
+
+function decodeReport(enc) {
+  const decoded = atob(enc);
+  let url = "";
+  for (let i = 0; i < decoded.length; i++) {
+    url += String.fromCharCode(decoded.charCodeAt(i) ^ SECRET.charCodeAt(i % SECRET.length));
+  }
+  return url;
+}
+
+// ══════════════════════════════════════════════════════════
+//  REPORTES — Reemplaza las URLs con tus links reales de Power BI
+//  Formato: encodeReport("https://app.powerbi.com/view?r=TU_LINK_AQUI")
+// ══════════════════════════════════════════════════════════
+const REPORTES = {
+  "Consumo": {
+    nombre: "Reporte de Consumo",
+    categoria: "Comercial",
+    icono: "📈",
+    url: encodeReport("https://app.powerbi.com/view?r=eyJrIjoiOTU3MmFlNTYtODc3NC00YjA1LTg4ZWQtYTFhNDk5NWZlNDIxIiwidCI6IjRhN2I5ODhjLTFiMWYtNGZkNy05Y2RmLWVmZGU1M2M4MTY1NCJ9")
+  },
+  "inventario": {
+    nombre: "Reporte de Inventario",
+    categoria: "Operaciones",
+    icono: "📦",
+    url: encodeReport("https://app.powerbi.com/reportEmbed?reportId=TU-REPORTE-INVENTARIO-ID&autoAuth=true&ctid=TU-TENANT-ID")
+  },
+  "rrhh": {
+    nombre: "Reporte de RRHH",
+    categoria: "Recursos Humanos",
+    icono: "👥",
+    url: encodeReport("https://app.powerbi.com/reportEmbed?reportId=TU-REPORTE-RRHH-ID&autoAuth=true&ctid=TU-TENANT-ID")
+  },
+  "financiero": {
+    nombre: "Reporte Financiero",
+    categoria: "Finanzas",
+    icono: "💰",
+    url: encodeReport("https://app.powerbi.com/reportEmbed?reportId=TU-REPORTE-FINANCIERO-ID&autoAuth=true&ctid=TU-TENANT-ID")
+  }
+};
+
+// ══════════════════════════════════════════════════════════
+//  ESTADO
+// ══════════════════════════════════════════════════════════
+let currentUser = null;
+let activeReport = null;
+
+// ══════════════════════════════════════════════════════════
+//  LOGIN
+// ══════════════════════════════════════════════════════════
+function doLogin() {
+  const user = document.getElementById("inp-user").value.trim().toLowerCase();
+  const pass = document.getElementById("inp-pass").value.trim();
+  const errEl = document.getElementById("login-error");
+
+  if (USUARIOS[user] && USUARIOS[user].pass === pass) {
+    currentUser = { key: user, ...USUARIOS[user] };
+    errEl.style.display = "none";
+
+    // Animación de salida
+    const card = document.querySelector(".login-card");
+    card.style.animation = "slideUp 0.4s reverse";
+    setTimeout(() => {
+      document.getElementById("login-screen").style.display = "none";
+      showApp();
+    }, 350);
+  } else {
+    errEl.style.display = "block";
+    const card = document.querySelector(".login-card");
+    card.style.animation = "none";
+    card.style.transform = "translateX(-8px)";
+    setTimeout(() => { card.style.transform = ""; card.style.transition = "transform 0.2s"; }, 150);
+  }
+}
+
+// Enter para login
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && document.getElementById("login-screen").style.display !== "none") doLogin();
+});
+
+// ══════════════════════════════════════════════════════════
+//  APP
+// ══════════════════════════════════════════════════════════
+function showApp() {
+  const app = document.getElementById("app");
+  app.style.display = "flex";
+
+  // Usuario info
+  document.getElementById("user-display").textContent = currentUser.nombre;
+  document.getElementById("user-avatar").textContent = currentUser.nombre.charAt(0).toUpperCase();
+
+  // Renderizar reportes
+  const list = document.getElementById("reports-list");
+  list.innerHTML = "";
+  currentUser.reportes.forEach(key => {
+    const r = REPORTES[key];
+    if (!r) return;
+    const item = document.createElement("div");
+    item.className = "report-item";
+    item.dataset.key = key;
+    item.innerHTML = `
+      <div class="report-icon">${r.icono}</div>
+      <div>
+        <div class="report-name">${r.nombre}</div>
+        <div class="report-category">${r.categoria}</div>
+      </div>
+    `;
+    item.addEventListener("click", () => loadReport(key, item));
+    list.appendChild(item);
+  });
+}
+
+function loadReport(key, itemEl) {
+  // Activo en sidebar
+  document.querySelectorAll(".report-item").forEach(i => i.classList.remove("active"));
+  itemEl.classList.add("active");
+
+  const r = REPORTES[key];
+  if (!r) return;
+
+  // Cerrar sidebar en mobile
+  closeSidebar();
+
+  // Topbar
+  document.getElementById("topbar-title").textContent = r.nombre;
+  document.getElementById("topbar-badge").textContent = r.categoria;
+
+  // Mostrar viewer
+  document.getElementById("welcome-state").style.display = "none";
+  const viewer = document.getElementById("report-viewer");
+  viewer.style.display = "block";
+
+  // Loading
+  document.getElementById("iframe-loading").style.display = "flex";
+
+  // Cargar URL decodificada en iframe
+  const iframe = document.getElementById("report-iframe");
+  iframe.src = decodeReport(r.url);
+
+  activeReport = key;
+}
+
+function iframeLoaded() {
+  document.getElementById("iframe-loading").style.display = "none";
+}
+
+function doLogout() {
+  currentUser = null;
+  activeReport = null;
+  document.getElementById("app").style.display = "none";
+  document.getElementById("inp-user").value = "";
+  document.getElementById("inp-pass").value = "";
+  document.getElementById("login-screen").style.display = "flex";
+  document.getElementById("welcome-state").style.display = "flex";
+  document.getElementById("report-viewer").style.display = "none";
+  document.getElementById("report-iframe").src = "";
+  const card = document.querySelector(".login-card");
+  card.style.animation = "slideUp 0.6s cubic-bezier(0.22,1,0.36,1)";
+}
+
+// ══════════════════════════════════════════════════════════
+//  MOBILE SIDEBAR
+// ══════════════════════════════════════════════════════════
+function toggleSidebar() {
+  document.getElementById("sidebar").classList.toggle("open");
+  document.getElementById("sidebar-overlay").classList.toggle("show");
+}
+
+function closeSidebar() {
+  document.getElementById("sidebar").classList.remove("open");
+  document.getElementById("sidebar-overlay").classList.remove("show");
+}
+</script>
+</body>
+</html>
